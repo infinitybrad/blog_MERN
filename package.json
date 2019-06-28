@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/infinitybrad/blog_MERN/issues"
   },
-  "homepage": "https://github.com/infinitybrad/blog_MERN#readme"
+  "homepage": "https://github.com/infinitybrad/blog_MERN#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }
