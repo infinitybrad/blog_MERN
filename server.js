@@ -1,5 +1,21 @@
 const express = require("express");
+const mongoose = require("mongoose");
+
 const app = express();
+
+//DB config
+const db = require("./config/keys").mongoURI;
+
+
+//Connext to Mongo
+mongoose
+    .connect(db, {
+        useNewUrlParser:true,
+        useCreateIndex:true
+    })
+    .then(() => console.log('MongoDB Connected...'))
+    .catch(err => console.log(err));
+
 
 const usersRoutes = require('./route/api/users');
 const profileRoutes = require('./route/api/profile');
