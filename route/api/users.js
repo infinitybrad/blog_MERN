@@ -76,6 +76,55 @@ router.post('/register', (req, res) =>{
 });
 
 
+// @route POST api/users/login
+// @desc  user  login & return jwt
+// @access Public
+
+router.post('/login', (req, res) => {
+
+    userModel
+        .findOne({email:req.body.email}) // 이메일 유무 체크 
+        .then(user => {
+            if(!user) // 메일이 없으면 에러 메세지 리턴
+            {
+                return res.status(400).json({
+                    msg:"not found email"
+                });
+
+            }
+            else // 메일이 있으면 
+            {
+                bcrypt // 사용자 입력 패스워드와 데이터 베이스 패스워드 비교
+                    .compare(req.body.password, user.password)
+                    .then(result => {
+                        if(!result) // 패스워드가 불일치...
+                        {
+                            return res.status(400).json({
+                                msg: "password do not match"
+                            });
+
+                        }
+                        //패스워드 일치...
+                        res.status(200).json({
+                            msg:"successful"
+                        });
+
+                    })
+                    .catch(err => {
+                        res.status(400).json({
+                            error:err
+                        });
+                    });
+
+            }
+        })
+        .catch(err => {
+            res.status(400).json({
+                error:err
+            });
+        });
+
+});
 
 
 module.exports = router;
