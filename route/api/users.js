@@ -5,6 +5,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const keys =  require("../../config/keys");
 const passport = require("passport");
+const validateRegisterInput = require("../../validation/register");
 
 const checkAuth = passport.authenticate('jwt', {session: false});
 
@@ -23,15 +24,24 @@ router.get('/test',(req,res) => res.json({
 // @access Public
 router.post('/register', (req, res) =>{
 
+    const {errors, isValid} = validateRegisterInput(req.body);
+
+    //check validation
+    if(!isValid) {
+        return res.status(400).json(errors);
+    }
+
     // 기존 모델내의 이메일 유무 체크 
     userModel
         .findOne({email:req.body.email})
         .then(user => {
             if(user)// 이메일이 있을 경우
             {
-                return res.status(400).json({
-                    email: "email already exists"
-                });
+                // return res.status(400).json({
+                //     email: "email already exists"
+                // });
+                errors.email = "email already exists";
+                return res.status(400).json(errors);
             }
             else // 이메일이 없을 경우 
             {
