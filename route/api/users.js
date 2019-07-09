@@ -2,6 +2,9 @@ const express = require("express");
 const router  = express.Router();
 const gravatar =  require("gravatar");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const keys =  require("../../config/keys");
+
 
 const userModel = require('../../models/user');
 
@@ -97,17 +100,32 @@ router.post('/login', (req, res) => {
                 bcrypt // 사용자 입력 패스워드와 데이터 베이스 패스워드 비교
                     .compare(req.body.password, user.password)
                     .then(result => {
-                        if(!result) // 패스워드가 불일치...
+                        if(!result) // 패스워드가 불일치시...
                         {
                             return res.status(400).json({
                                 msg: "password do not match"
                             });
 
                         }
-                        //패스워드 일치...
-                        res.status(200).json({
-                            msg:"successful"
-                        });
+                        //패스워드 일치시...
+                        const payload = {id: user.id, name: user.name, avatar:user.avatar};
+
+                        //토큰 생성
+                        jwt.sign(
+                            payload,
+                            keys.secretOrKey,
+                            {expiresIn :3600},
+                            (err,token) => {
+                                res.json({
+                                    result: "successful",
+                                    token: "Bearer "+token
+                                });
+                            }
+                        );
+
+                        // res.status(200).json({
+                        //     msg:"successful"
+                        // });
 
                     })
                     .catch(err => {
